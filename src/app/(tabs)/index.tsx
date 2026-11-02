@@ -245,7 +245,8 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     flexDirection: "row",
-    flexWrap: "wrap",
+    flexWrap: "nowrap",
+    width: "100%",
     gap: 8,
     marginBottom: Spacing.xl,
   },

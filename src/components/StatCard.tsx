@@ -26,10 +26,12 @@ export function StatCard({ label, value, description, accent }: StatCardProps) {
 const styles = StyleSheet.create({
   card: {
     flex: 1,
+    width: 0,
     minWidth: 0,
     backgroundColor: Colors.surface,
     borderRadius: Radius.lg,
-    padding: 10,
+    paddingHorizontal: 7,
+    paddingVertical: 12,
     borderWidth: 1,
     borderColor: Colors.border,
   },
