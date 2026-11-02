@@ -1,10 +1,10 @@
 import {
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    useWindowDimensions,
-    View,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
 } from "react-native";
 
 import { router } from "expo-router";
@@ -34,8 +34,6 @@ export default function DashboardScreen() {
   const recentTasks = sampleTasks
     .filter((task) => task.status !== "completed")
     .slice(0, 2);
-
-  const compact = width < 380;
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
@@ -90,7 +88,7 @@ export default function DashboardScreen() {
             subtitle="A snapshot of your tasks"
           />
 
-          <View style={[styles.statsContainer, compact && styles.compactStats]}>
+          <View style={[styles.statsContainer]}>
             <StatCard
               label="Completed"
               value={completed}
@@ -248,8 +246,7 @@ const styles = StyleSheet.create({
   statsContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    alignContent: "flex-start",
-    gap: Spacing.sm,
+    gap: 8,
     marginBottom: Spacing.xl,
   },
   compactStats: {

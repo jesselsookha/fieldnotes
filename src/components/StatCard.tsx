@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 
-import { Colors, Radius, Spacing } from "../constants/theme";
+import { Colors, Radius } from "../constants/theme";
 
 interface StatCardProps {
   label: string;
@@ -26,32 +26,32 @@ export function StatCard({ label, value, description, accent }: StatCardProps) {
 const styles = StyleSheet.create({
   card: {
     flex: 1,
-    minWidth: 140,
+    minWidth: 0,
     backgroundColor: Colors.surface,
     borderRadius: Radius.lg,
-    padding: Spacing.md,
+    padding: 10,
     borderWidth: 1,
     borderColor: Colors.border,
   },
   indicator: {
-    width: 9,
-    height: 9,
-    borderRadius: 5,
-    marginBottom: 12,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginBottom: 10,
   },
   label: {
-    fontSize: 12,
+    fontSize: 10,
     color: Colors.muted,
-    fontWeight: "500",
+    fontWeight: "600",
   },
   value: {
-    fontSize: 29,
+    fontSize: 25,
     fontWeight: "700",
     color: Colors.text,
     marginTop: 5,
   },
   description: {
-    fontSize: 11,
+    fontSize: 9,
     color: Colors.muted,
     marginTop: 5,
   },
