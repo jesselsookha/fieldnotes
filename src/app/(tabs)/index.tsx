@@ -1,14 +1,8 @@
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { router } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Colors, Radius, Spacing } from "../../constants/theme";
 
@@ -19,9 +13,7 @@ import { TaskCard } from "../../components/TaskCard";
 import { useTasks } from "../../hooks/useTasks";
 
 export default function DashboardScreen() {
-  const { width, fontScale } = useWindowDimensions();
-
-  const { tasks, toggleTaskStatus, deleteTask } = useTasks();
+  const { tasks, loading, error, toggleTaskStatus, deleteTask } = useTasks();
 
   const completed = tasks.filter((task) => task.status === "completed").length;
 
@@ -34,8 +26,6 @@ export default function DashboardScreen() {
   const recentTasks = tasks
     .filter((task) => task.status !== "completed")
     .slice(0, 2);
-
-  const compact = width < 380 || fontScale > 1.2;
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
@@ -84,7 +74,7 @@ export default function DashboardScreen() {
             subtitle="A snapshot of your tasks"
           />
 
-          <View style={[styles.statsContainer, compact && styles.compactStats]}>
+          <View style={styles.statsContainer}>
             <StatCard
               label="Completed"
               value={completed}
@@ -113,7 +103,13 @@ export default function DashboardScreen() {
               subtitle="Things that need your attention"
             />
 
-            {recentTasks.length === 0 ? (
+            {loading ? (
+              <Text style={styles.emptyText}>Loading your activities...</Text>
+            ) : error ? (
+              <Text style={styles.emptyText}>
+                Unable to load your activities.
+              </Text>
+            ) : recentTasks.length === 0 ? (
               <Text style={styles.emptyText}>
                 No outstanding tasks. Well done!
               </Text>
@@ -259,9 +255,6 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: 8,
     marginBottom: Spacing.xl,
-  },
-  compactStats: {
-    flexWrap: "wrap",
   },
   section: {
     marginTop: Spacing.sm,

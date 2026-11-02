@@ -1,31 +1,50 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+
+import { SafeAreaView } from "react-native-safe-area-context";
+
+import { router, useLocalSearchParams } from "expo-router";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { router, useLocalSearchParams } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Colors, Radius, Spacing } from "../constants/theme";
 
 import { TaskForm } from "../components/TaskForm";
 import { useTasks } from "../hooks/useTasks";
 
+import type { TaskInput } from "../types/task";
+
 export default function NewTaskScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
 
-  const { tasks, addTask, updateTask } = useTasks();
+  const { tasks, loading, addTask, updateTask } = useTasks();
 
   const existingTask = id ? tasks.find((task) => task.id === id) : undefined;
 
   const isEditing = Boolean(id);
 
-  function handleSubmit(input: Parameters<typeof addTask>[0]) {
-    if (existingTask) {
-      updateTask(existingTask.id, input);
-    } else {
-      addTask(input);
-    }
+  async function handleSubmit(input: TaskInput) {
+    const success = existingTask
+      ? await updateTask(existingTask.id, input)
+      : await addTask(input);
 
-    router.back();
+    if (success) {
+      router.back();
+    } else {
+      Alert.alert(
+        "Unable to save task",
+        "Your task could not be saved. Please try again.",
+      );
+    }
+  }
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.notFound}>
+          <Text style={styles.notFoundTitle}>Loading...</Text>
+        </View>
+      </SafeAreaView>
+    );
   }
 
   if (isEditing && !existingTask) {
@@ -63,6 +82,7 @@ export default function NewTaskScreen() {
 
       <View style={styles.body}>
         <TaskForm
+          key={existingTask?.id ?? "new"}
           initialTask={existingTask}
           onSubmit={handleSubmit}
           submitLabel={isEditing ? "Save changes" : "Create task"}

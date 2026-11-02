@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 
-import { Colors, Radius } from "../constants/theme";
+import { Colors, Radius, Spacing } from "../constants/theme";
 
 interface StatCardProps {
   label: string;
@@ -14,11 +14,15 @@ export function StatCard({ label, value, description, accent }: StatCardProps) {
     <View style={styles.card}>
       <View style={[styles.indicator, { backgroundColor: accent }]} />
 
-      <Text style={styles.label}>{label}</Text>
+      <Text style={styles.label} numberOfLines={1}>
+        {label}
+      </Text>
 
       <Text style={styles.value}>{value}</Text>
 
-      <Text style={styles.description}>{description}</Text>
+      <Text style={styles.description} numberOfLines={2}>
+        {description}
+      </Text>
     </View>
   );
 }
@@ -26,35 +30,34 @@ export function StatCard({ label, value, description, accent }: StatCardProps) {
 const styles = StyleSheet.create({
   card: {
     flex: 1,
-    width: 0,
     minWidth: 0,
     backgroundColor: Colors.surface,
     borderRadius: Radius.lg,
-    paddingHorizontal: 7,
-    paddingVertical: 12,
     borderWidth: 1,
     borderColor: Colors.border,
+    padding: Spacing.sm,
   },
   indicator: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: 22,
+    height: 4,
+    borderRadius: 2,
     marginBottom: 10,
   },
   label: {
     fontSize: 10,
+    fontWeight: "700",
     color: Colors.muted,
-    fontWeight: "600",
   },
   value: {
     fontSize: 25,
-    fontWeight: "700",
+    fontWeight: "800",
     color: Colors.text,
     marginTop: 5,
   },
   description: {
     fontSize: 9,
+    lineHeight: 13,
     color: Colors.muted,
-    marginTop: 5,
+    marginTop: 4,
   },
 });

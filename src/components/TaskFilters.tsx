@@ -11,7 +11,10 @@ interface TaskFiltersProps {
   onChange: (filter: TaskFilter) => void;
 }
 
-const filters: { label: string; value: TaskFilter }[] = [
+const filters: {
+  label: string;
+  value: TaskFilter;
+}[] = [
   { label: "All", value: "all" },
   { label: "Pending", value: "pending" },
   { label: "In progress", value: "in-progress" },

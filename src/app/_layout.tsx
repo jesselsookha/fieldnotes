@@ -2,6 +2,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
 import { Colors } from "../constants/theme";
+
 import { TaskProvider } from "../context/TaskContext";
 
 export default function RootLayout() {

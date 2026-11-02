@@ -5,50 +5,30 @@ import { Colors, Spacing } from "../constants/theme";
 interface SectionHeadingProps {
   title: string;
   subtitle?: string;
-  action?: string;
 }
 
-export function SectionHeading({
-  title,
-  subtitle,
-  action,
-}: SectionHeadingProps) {
+export function SectionHeading({ title, subtitle }: SectionHeadingProps) {
   return (
     <View style={styles.container}>
-      <View style={styles.textContainer}>
-        <Text style={styles.title}>{title}</Text>
+      <Text style={styles.title}>{title}</Text>
 
-        {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
-      </View>
-
-      {action ? <Text style={styles.action}>{action}</Text> : null}
+      {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
     marginBottom: Spacing.md,
   },
-  textContainer: {
-    flex: 1,
-  },
   title: {
-    fontSize: 19,
-    fontWeight: "700",
     color: Colors.text,
+    fontSize: 18,
+    fontWeight: "800",
   },
   subtitle: {
-    fontSize: 13,
     color: Colors.muted,
+    fontSize: 12,
     marginTop: 4,
-  },
-  action: {
-    color: Colors.primary,
-    fontSize: 13,
-    fontWeight: "600",
   },
 });

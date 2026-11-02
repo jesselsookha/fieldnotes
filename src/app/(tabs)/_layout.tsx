@@ -1,5 +1,6 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
+
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 import { Colors } from "../../constants/theme";
 
@@ -15,9 +16,6 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: Colors.surface,
           borderTopColor: Colors.border,
-          height: 62,
-          paddingTop: 8,
-          paddingBottom: 8,
         },
 
         tabBarLabelStyle: {
@@ -30,10 +28,10 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Overview",
-          tabBarIcon: ({ focused, size }) => (
+          tabBarIcon: ({ color, size }) => (
             <Ionicons
               name="grid-outline"
-              color={focused ? Colors.primary : Colors.muted}
+              color={color ? Colors.primary : Colors.muted}
               size={size}
             />
           ),
@@ -44,10 +42,10 @@ export default function TabLayout() {
         name="tasks"
         options={{
           title: "Tasks",
-          tabBarIcon: ({ focused, size }) => (
+          tabBarIcon: ({ color, size }) => (
             <Ionicons
               name="checkbox-outline"
-              color={focused ? Colors.primary : Colors.muted}
+              color={color ? Colors.primary : Colors.muted}
               size={size}
             />
           ),

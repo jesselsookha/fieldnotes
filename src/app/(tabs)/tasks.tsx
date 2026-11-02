@@ -2,20 +2,23 @@ import { useMemo, useState } from "react";
 
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import { router } from "expo-router";
+
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 import { Colors, Spacing } from "../../constants/theme";
 
 import { SectionHeading } from "../../components/SectionHeading";
 import { TaskCard } from "../../components/TaskCard";
+
 import { TaskFilters, type TaskFilter } from "../../components/TaskFilters";
 
 import { useTasks } from "../../hooks/useTasks";
 
 export default function TasksScreen() {
-  const { tasks, toggleTaskStatus, deleteTask } = useTasks();
+  const { tasks, loading, error, toggleTaskStatus, deleteTask } = useTasks();
 
   const [filter, setFilter] = useState<TaskFilter>("all");
 
@@ -50,7 +53,17 @@ export default function TasksScreen() {
 
         <TaskFilters selected={filter} onChange={setFilter} />
 
-        {filteredTasks.length === 0 ? (
+        {loading ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyDescription}>Loading your tasks...</Text>
+          </View>
+        ) : error ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyTitle}>Unable to load tasks</Text>
+
+            <Text style={styles.emptyDescription}>{error}</Text>
+          </View>
+        ) : filteredTasks.length === 0 ? (
           <View style={styles.emptyState}>
             <Ionicons name="clipboard-outline" size={38} color={Colors.muted} />
 

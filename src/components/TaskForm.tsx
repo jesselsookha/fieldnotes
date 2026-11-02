@@ -1,13 +1,13 @@
 import { useState } from "react";
 
 import {
-    Alert,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 
 import { Colors, Radius, Spacing } from "../constants/theme";
@@ -16,7 +16,7 @@ import type { Task, TaskInput, TaskPriority, TaskStatus } from "../types/task";
 
 interface TaskFormProps {
   initialTask?: Task;
-  onSubmit: (input: TaskInput) => void;
+  onSubmit: (input: TaskInput) => void | Promise<void>;
   submitLabel: string;
 }
 
@@ -47,41 +47,41 @@ export function TaskForm({
 
   const [dueDate, setDueDate] = useState(initialTask?.dueDate ?? "");
 
-  const [errors, setErrors] = useState<string[]>([]);
+  const [submitting, setSubmitting] = useState(false);
 
-  function handleSubmit() {
-    const validationErrors: string[] = [];
-
+  async function handleSubmit() {
     if (!title.trim()) {
-      validationErrors.push("Please enter a task title.");
-    }
-
-    if (!category.trim()) {
-      validationErrors.push("Please enter a category.");
-    }
-
-    if (dueDate.trim() && !/^\d{4}-\d{2}-\d{2}$/.test(dueDate.trim())) {
-      validationErrors.push("Please use the date format YYYY-MM-DD.");
-    }
-
-    if (validationErrors.length > 0) {
-      setErrors(validationErrors);
-
-      Alert.alert("Check your information", validationErrors.join("\n"));
+      Alert.alert("Missing information", "Please enter a task title.");
 
       return;
     }
 
-    setErrors([]);
+    if (!category.trim()) {
+      Alert.alert("Missing information", "Please enter a category.");
 
-    onSubmit({
-      title: title.trim(),
-      description: description.trim(),
-      category: category.trim(),
-      priority,
-      status,
-      dueDate: dueDate.trim(),
-    });
+      return;
+    }
+
+    if (dueDate.trim() && !/^\d{4}-\d{2}-\d{2}$/.test(dueDate.trim())) {
+      Alert.alert("Invalid date", "Please use YYYY-MM-DD.");
+
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      await onSubmit({
+        title: title.trim(),
+        description: description.trim(),
+        category: category.trim(),
+        priority,
+        status,
+        dueDate: dueDate.trim(),
+      });
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -148,8 +148,6 @@ export function TaskForm({
           maxLength={10}
           style={styles.input}
         />
-
-        <Text style={styles.helper}>Example: 2026-11-05</Text>
       </View>
 
       <View style={styles.field}>
@@ -204,14 +202,14 @@ export function TaskForm({
         </View>
       </View>
 
-      {errors.length > 0 && (
-        <Text style={styles.error}>
-          Please correct the highlighted information.
+      <Pressable
+        onPress={() => void handleSubmit()}
+        disabled={submitting}
+        style={[styles.submitButton, submitting && styles.disabledButton]}
+      >
+        <Text style={styles.submitText}>
+          {submitting ? "Saving..." : submitLabel}
         </Text>
-      )}
-
-      <Pressable onPress={handleSubmit} style={styles.submitButton}>
-        <Text style={styles.submitText}>{submitLabel}</Text>
       </Pressable>
     </ScrollView>
   );
@@ -246,11 +244,6 @@ const styles = StyleSheet.create({
   textArea: {
     minHeight: 105,
   },
-  helper: {
-    color: Colors.muted,
-    fontSize: 11,
-    marginTop: 6,
-  },
   options: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -277,17 +270,15 @@ const styles = StyleSheet.create({
   selectedOptionText: {
     color: "#FFFFFF",
   },
-  error: {
-    color: Colors.danger,
-    fontSize: 12,
-    marginBottom: Spacing.md,
-  },
   submitButton: {
     backgroundColor: Colors.primary,
     padding: Spacing.md,
     borderRadius: Radius.md,
     alignItems: "center",
     marginTop: Spacing.md,
+  },
+  disabledButton: {
+    opacity: 0.6,
   },
   submitText: {
     color: "#FFFFFF",
