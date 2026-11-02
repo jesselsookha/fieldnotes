@@ -12,16 +12,11 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase): Promise<void> {
       await db.execAsync(`
         CREATE TABLE IF NOT EXISTS tasks (
           id TEXT PRIMARY KEY NOT NULL,
-
           title TEXT NOT NULL,
-
           description TEXT NOT NULL DEFAULT '',
-
           category TEXT NOT NULL,
-
           priority TEXT NOT NULL
             CHECK(priority IN ('low', 'medium', 'high')),
-
           status TEXT NOT NULL
             CHECK(
               status IN (
@@ -30,11 +25,8 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase): Promise<void> {
                 'completed'
               )
             ),
-
           due_date TEXT NOT NULL DEFAULT '',
-
           created_at TEXT NOT NULL,
-
           updated_at TEXT NOT NULL
         );
 
