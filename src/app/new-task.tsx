@@ -1,40 +1,72 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Colors, Radius, Spacing } from "../constants/theme";
 
+import { TaskForm } from "../components/TaskForm";
+import { useTasks } from "../hooks/useTasks";
+
 export default function NewTaskScreen() {
+  const { id } = useLocalSearchParams<{ id?: string }>();
+
+  const { tasks, addTask, updateTask } = useTasks();
+
+  const existingTask = id ? tasks.find((task) => task.id === id) : undefined;
+
+  const isEditing = Boolean(id);
+
+  function handleSubmit(input: Parameters<typeof addTask>[0]) {
+    if (existingTask) {
+      updateTask(existingTask.id, input);
+    } else {
+      addTask(input);
+    }
+
+    router.back();
+  }
+
+  if (isEditing && !existingTask) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.notFound}>
+          <Text style={styles.notFoundTitle}>Task not found</Text>
+
+          <Pressable onPress={() => router.back()}>
+            <Text style={styles.backText}>Go back</Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <Pressable onPress={() => router.back()} style={styles.closeButton}>
-          <Ionicons name="close" size={23} color={Colors.text} />
+      <View style={styles.header}>
+        <Pressable
+          onPress={() => router.back()}
+          style={styles.closeButton}
+          accessibilityRole="button"
+          accessibilityLabel="Close task form"
+        >
+          <Ionicons name="close" size={22} color={Colors.text} />
         </Pressable>
 
-        <View style={styles.content}>
-          <View style={styles.iconContainer}>
-            <Ionicons name="create-outline" size={34} color={Colors.primary} />
-          </View>
+        <Text style={styles.title}>
+          {isEditing ? "Edit task" : "Create a task"}
+        </Text>
 
-          <Text style={styles.title}>Create a task</Text>
+        <View style={styles.placeholder} />
+      </View>
 
-          <Text style={styles.description}>
-            Give your next activity a name, set a priority and decide when you
-            want to complete it.
-          </Text>
-
-          <View style={styles.infoCard}>
-            <Text style={styles.infoTitle}>Coming in Stage 2</Text>
-
-            <Text style={styles.infoDescription}>
-              We'll introduce interactive forms, validation, task creation and
-              editing.
-            </Text>
-          </View>
-        </View>
+      <View style={styles.body}>
+        <TaskForm
+          initialTask={existingTask}
+          onSubmit={handleSubmit}
+          submitLabel={isEditing ? "Save changes" : "Create task"}
+        />
       </View>
     </SafeAreaView>
   );
@@ -45,65 +77,46 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
-  container: {
-    flex: 1,
-    padding: Spacing.lg,
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
   },
   closeButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 40,
+    height: 40,
+    borderRadius: Radius.round,
     backgroundColor: Colors.surface,
-    justifyContent: "center",
-    alignItems: "center",
-    alignSelf: "flex-end",
-  },
-  content: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: Spacing.md,
-  },
-  iconContainer: {
-    width: 76,
-    height: 76,
-    borderRadius: Radius.xl,
-    backgroundColor: Colors.primaryLight,
     alignItems: "center",
     justifyContent: "center",
   },
   title: {
-    fontSize: 27,
-    fontWeight: "800",
-    color: Colors.text,
-    marginTop: Spacing.lg,
-  },
-  description: {
-    color: Colors.muted,
-    fontSize: 14,
-    textAlign: "center",
-    lineHeight: 22,
-    marginTop: Spacing.sm,
-    maxWidth: 300,
-  },
-  infoCard: {
-    backgroundColor: Colors.surface,
-    borderRadius: Radius.lg,
-    padding: Spacing.lg,
-    marginTop: Spacing.xl,
-    width: "100%",
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  infoTitle: {
-    color: Colors.primary,
+    fontSize: 18,
     fontWeight: "700",
-    fontSize: 14,
+    color: Colors.text,
   },
-  infoDescription: {
-    color: Colors.muted,
-    fontSize: 13,
-    lineHeight: 20,
-    marginTop: 7,
+  placeholder: {
+    width: 40,
+  },
+  body: {
+    flex: 1,
+    paddingHorizontal: Spacing.md,
+  },
+  notFound: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: Spacing.md,
+  },
+  notFoundTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: Colors.text,
+  },
+  backText: {
+    color: Colors.primary,
+    fontWeight: "600",
   },
 });

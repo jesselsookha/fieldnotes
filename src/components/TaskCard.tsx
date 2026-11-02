@@ -1,56 +1,117 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 import { Colors, Radius, Spacing } from "../constants/theme";
+
 import type { Task } from "../types/task";
 
 interface TaskCardProps {
   task: Task;
+  onPress: () => void;
+  onToggle: () => void;
+  onDelete: () => void;
 }
 
-export function TaskCard({ task }: TaskCardProps) {
+export function TaskCard({ task, onPress, onToggle, onDelete }: TaskCardProps) {
   const priorityColor = {
     low: Colors.success,
     medium: Colors.warning,
     high: Colors.danger,
   }[task.priority];
 
-  const statusLabel = {
-    pending: "Pending",
-    "in-progress": "In progress",
-    completed: "Completed",
-  }[task.status];
+  function confirmDelete() {
+    Alert.alert(
+      "Delete task?",
+      `Are you sure you want to delete "${task.title}"?`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: onDelete,
+        },
+      ],
+    );
+  }
 
   return (
     <View style={styles.card}>
-      <View style={styles.topRow}>
+      <View style={styles.mainRow}>
+        <Pressable
+          onPress={onToggle}
+          style={styles.checkButton}
+          accessibilityRole="checkbox"
+          accessibilityState={{
+            checked: task.status === "completed",
+          }}
+          accessibilityLabel={`Mark ${task.title} ${
+            task.status === "completed" ? "incomplete" : "complete"
+          }`}
+        >
+          <Ionicons
+            name={
+              task.status === "completed"
+                ? "checkmark-circle"
+                : "ellipse-outline"
+            }
+            size={25}
+            color={task.status === "completed" ? Colors.success : Colors.muted}
+          />
+        </Pressable>
+
+        <Pressable
+          onPress={onPress}
+          style={styles.content}
+          accessibilityRole="button"
+          accessibilityLabel={`Edit ${task.title}`}
+        >
+          <Text
+            style={[
+              styles.title,
+              task.status === "completed" && styles.completedTitle,
+            ]}
+            numberOfLines={2}
+          >
+            {task.title}
+          </Text>
+
+          <Text style={styles.description} numberOfLines={2}>
+            {task.description || "No description"}
+          </Text>
+        </Pressable>
+
+        <Pressable
+          onPress={confirmDelete}
+          style={styles.deleteButton}
+          accessibilityRole="button"
+          accessibilityLabel={`Delete ${task.title}`}
+        >
+          <Ionicons name="trash-outline" size={19} color={Colors.muted} />
+        </Pressable>
+      </View>
+
+      <View style={styles.footer}>
         <View style={styles.category}>
           <Text style={styles.categoryText}>{task.category}</Text>
         </View>
 
-        <View style={styles.priority}>
+        <View style={styles.metadata}>
           <View
             style={[styles.priorityDot, { backgroundColor: priorityColor }]}
           />
 
           <Text style={styles.priorityText}>{task.priority}</Text>
+
+          <Text style={styles.separator}>·</Text>
+
+          <Text style={styles.statusText}>
+            {task.status === "in-progress" ? "In progress" : task.status}
+          </Text>
         </View>
-      </View>
-
-      <Text style={styles.title}>{task.title}</Text>
-
-      <Text style={styles.description}>{task.description}</Text>
-
-      <View style={styles.footer}>
-        <Text style={styles.date}>Due {task.dueDate}</Text>
-
-        <Text
-          style={[
-            styles.status,
-            task.status === "completed" && styles.completed,
-          ]}
-        >
-          {statusLabel}
-        </Text>
       </View>
     </View>
   );
@@ -65,10 +126,45 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border,
   },
-  topRow: {
+  mainRow: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
+    gap: Spacing.sm,
+  },
+  checkButton: {
+    paddingTop: 1,
+  },
+  content: {
+    flex: 1,
+  },
+  title: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: Colors.text,
+  },
+  completedTitle: {
+    textDecorationLine: "line-through",
+    color: Colors.muted,
+  },
+  description: {
+    fontSize: 12,
+    color: Colors.muted,
+    lineHeight: 18,
+    marginTop: 5,
+  },
+  deleteButton: {
+    padding: 4,
+  },
+  footer: {
+    flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: 8,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+    paddingTop: Spacing.md,
+    marginTop: Spacing.md,
   },
   category: {
     backgroundColor: Colors.primaryLight,
@@ -77,11 +173,11 @@ const styles = StyleSheet.create({
     borderRadius: Radius.round,
   },
   categoryText: {
-    color: Colors.primary,
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: "600",
+    color: Colors.primary,
   },
-  priority: {
+  metadata: {
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
@@ -93,40 +189,15 @@ const styles = StyleSheet.create({
   },
   priorityText: {
     color: Colors.muted,
-    fontSize: 11,
+    fontSize: 10,
     textTransform: "capitalize",
   },
-  title: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: Colors.text,
-    marginTop: Spacing.md,
-  },
-  description: {
-    fontSize: 13,
-    color: Colors.muted,
-    lineHeight: 19,
-    marginTop: 5,
-  },
-  footer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: Spacing.md,
-    paddingTop: Spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-  },
-  date: {
-    fontSize: 11,
+  separator: {
     color: Colors.muted,
   },
-  status: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: Colors.warning,
-  },
-  completed: {
-    color: Colors.success,
+  statusText: {
+    color: Colors.muted,
+    fontSize: 10,
+    textTransform: "capitalize",
   },
 });

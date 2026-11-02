@@ -1,16 +1,19 @@
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
+import { Colors } from "../constants/theme";
+import { TaskProvider } from "../context/TaskContext";
+
 export default function RootLayout() {
   return (
-    <>
+    <TaskProvider>
       <StatusBar style="dark" />
 
       <Stack
         screenOptions={{
           headerShown: false,
           contentStyle: {
-            backgroundColor: "#F6F7F9",
+            backgroundColor: Colors.background,
           },
         }}
       >
@@ -24,6 +27,6 @@ export default function RootLayout() {
           }}
         />
       </Stack>
-    </>
+    </TaskProvider>
   );
 }

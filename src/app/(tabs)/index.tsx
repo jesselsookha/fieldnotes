@@ -3,37 +3,39 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  useWindowDimensions,
   View,
+  useWindowDimensions,
 } from "react-native";
 
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Colors, Radius, Spacing } from "../../constants/theme";
+
 import { SectionHeading } from "../../components/SectionHeading";
 import { StatCard } from "../../components/StatCard";
 import { TaskCard } from "../../components/TaskCard";
-import { Colors, Radius, Spacing } from "../../constants/theme";
-import { sampleTasks } from "../../data/sampleTasks";
+
+import { useTasks } from "../../hooks/useTasks";
 
 export default function DashboardScreen() {
-  const { width } = useWindowDimensions();
+  const { width, fontScale } = useWindowDimensions();
 
-  const completed = sampleTasks.filter(
-    (task) => task.status === "completed",
-  ).length;
+  const { tasks, toggleTaskStatus, deleteTask } = useTasks();
 
-  const inProgress = sampleTasks.filter(
+  const completed = tasks.filter((task) => task.status === "completed").length;
+
+  const inProgress = tasks.filter(
     (task) => task.status === "in-progress",
   ).length;
 
-  const pending = sampleTasks.filter(
-    (task) => task.status === "pending",
-  ).length;
+  const pending = tasks.filter((task) => task.status === "pending").length;
 
-  const recentTasks = sampleTasks
+  const recentTasks = tasks
     .filter((task) => task.status !== "completed")
     .slice(0, 2);
+
+  const compact = width < 380 || fontScale > 1.2;
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
@@ -41,9 +43,7 @@ export default function DashboardScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={[styles.container, { maxWidth: 760 }]}>
-          {/* Header */}
-
+        <View style={styles.container}>
           <View style={styles.header}>
             <View>
               <Text style={styles.eyebrow}>FIELDNOTES</Text>
@@ -59,8 +59,6 @@ export default function DashboardScreen() {
               <Text style={styles.avatarText}>FN</Text>
             </View>
           </View>
-
-          {/* Welcome panel */}
 
           <View style={styles.welcomeCard}>
             <Text style={styles.welcomeLabel}>YOUR PRODUCTIVITY SPACE</Text>
@@ -81,14 +79,12 @@ export default function DashboardScreen() {
             <View style={styles.decorativeCircle} />
           </View>
 
-          {/* Statistics */}
-
           <SectionHeading
             title="Your activity"
             subtitle="A snapshot of your tasks"
           />
 
-          <View style={[styles.statsContainer]}>
+          <View style={[styles.statsContainer, compact && styles.compactStats]}>
             <StatCard
               label="Completed"
               value={completed}
@@ -106,12 +102,10 @@ export default function DashboardScreen() {
             <StatCard
               label="Pending"
               value={pending}
-              description="Waiting to be started"
+              description="Waiting to start"
               accent={Colors.primary}
             />
           </View>
-
-          {/* Recent tasks */}
 
           <View style={styles.section}>
             <SectionHeading
@@ -119,9 +113,26 @@ export default function DashboardScreen() {
               subtitle="Things that need your attention"
             />
 
-            {recentTasks.map((task) => (
-              <TaskCard key={task.id} task={task} />
-            ))}
+            {recentTasks.length === 0 ? (
+              <Text style={styles.emptyText}>
+                No outstanding tasks. Well done!
+              </Text>
+            ) : (
+              recentTasks.map((task) => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/new-task",
+                      params: { id: task.id },
+                    })
+                  }
+                  onToggle={() => toggleTaskStatus(task.id)}
+                  onDelete={() => deleteTask(task.id)}
+                />
+              ))
+            )}
 
             <Pressable
               style={styles.secondaryButton}
@@ -130,8 +141,6 @@ export default function DashboardScreen() {
               <Text style={styles.secondaryButtonText}>View all tasks →</Text>
             </Pressable>
           </View>
-
-          {/* Footer */}
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>
@@ -157,6 +166,7 @@ const styles = StyleSheet.create({
   },
   container: {
     width: "100%",
+    maxWidth: 760,
     alignSelf: "center",
   },
   header: {
@@ -251,10 +261,15 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   compactStats: {
-    flexDirection: "column",
+    flexWrap: "wrap",
   },
   section: {
     marginTop: Spacing.sm,
+  },
+  emptyText: {
+    color: Colors.muted,
+    fontSize: 13,
+    paddingVertical: Spacing.lg,
   },
   secondaryButton: {
     alignSelf: "center",

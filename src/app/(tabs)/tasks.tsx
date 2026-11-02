@@ -1,14 +1,32 @@
+import { useMemo, useState } from "react";
+
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Colors, Spacing } from "../../constants/theme";
+
 import { SectionHeading } from "../../components/SectionHeading";
 import { TaskCard } from "../../components/TaskCard";
-import { Colors, Spacing } from "../../constants/theme";
-import { sampleTasks } from "../../data/sampleTasks";
+import { TaskFilters, type TaskFilter } from "../../components/TaskFilters";
+
+import { useTasks } from "../../hooks/useTasks";
 
 export default function TasksScreen() {
+  const { tasks, toggleTaskStatus, deleteTask } = useTasks();
+
+  const [filter, setFilter] = useState<TaskFilter>("all");
+
+  const filteredTasks = useMemo(() => {
+    if (filter === "all") {
+      return tasks;
+    }
+
+    return tasks.filter((task) => task.status === filter);
+  }, [tasks, filter]);
+
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
       <ScrollView
@@ -27,12 +45,37 @@ export default function TasksScreen() {
 
         <SectionHeading
           title="All activities"
-          subtitle={`${sampleTasks.length} tasks in your workspace`}
+          subtitle={`${tasks.length} tasks in your workspace`}
         />
 
-        {sampleTasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
-        ))}
+        <TaskFilters selected={filter} onChange={setFilter} />
+
+        {filteredTasks.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Ionicons name="clipboard-outline" size={38} color={Colors.muted} />
+
+            <Text style={styles.emptyTitle}>Nothing here yet</Text>
+
+            <Text style={styles.emptyDescription}>
+              There are no tasks matching this filter.
+            </Text>
+          </View>
+        ) : (
+          filteredTasks.map((task) => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              onPress={() =>
+                router.push({
+                  pathname: "/new-task",
+                  params: { id: task.id },
+                })
+              }
+              onToggle={() => toggleTaskStatus(task.id)}
+              onDelete={() => deleteTask(task.id)}
+            />
+          ))
+        )}
 
         <Pressable
           style={styles.button}
@@ -86,5 +129,21 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontWeight: "700",
     fontSize: 14,
+  },
+  emptyState: {
+    alignItems: "center",
+    paddingVertical: Spacing.xxl,
+  },
+  emptyTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: Colors.text,
+    marginTop: Spacing.md,
+  },
+  emptyDescription: {
+    fontSize: 12,
+    color: Colors.muted,
+    marginTop: 5,
+    textAlign: "center",
   },
 });

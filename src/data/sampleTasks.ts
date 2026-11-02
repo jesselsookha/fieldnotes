@@ -9,6 +9,7 @@ export const sampleTasks: Task[] = [
     priority: "high",
     status: "in-progress",
     dueDate: "2026-11-03",
+    createdAt: "2026-11-01T09:00:00",
     updatedAt: "2026-11-02T08:30:00",
   },
   {
@@ -19,6 +20,7 @@ export const sampleTasks: Task[] = [
     priority: "medium",
     status: "pending",
     dueDate: "2026-11-04",
+    createdAt: "2026-11-01T09:00:00",
     updatedAt: "2026-11-02T08:15:00",
   },
   {
@@ -29,6 +31,7 @@ export const sampleTasks: Task[] = [
     priority: "low",
     status: "completed",
     dueDate: "2026-11-01",
+    createdAt: "2026-11-01T09:00:00",
     updatedAt: "2026-11-01T15:00:00",
   },
   {
@@ -39,6 +42,7 @@ export const sampleTasks: Task[] = [
     priority: "medium",
     status: "pending",
     dueDate: "2026-11-05",
+    createdAt: "2026-11-01T09:00:00",
     updatedAt: "2026-11-02T07:45:00",
   },
 ];
