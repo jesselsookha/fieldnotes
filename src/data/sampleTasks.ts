@@ -1,0 +1,44 @@
+import type { Task } from "../types/task";
+
+export const sampleTasks: Task[] = [
+  {
+    id: "1",
+    title: "Prepare project proposal",
+    description: "Finalise the project scope and objectives.",
+    category: "Work",
+    priority: "high",
+    status: "in-progress",
+    dueDate: "2026-11-03",
+    updatedAt: "2026-11-02T08:30:00",
+  },
+  {
+    id: "2",
+    title: "Review application designs",
+    description: "Check the latest mobile screen designs.",
+    category: "Development",
+    priority: "medium",
+    status: "pending",
+    dueDate: "2026-11-04",
+    updatedAt: "2026-11-02T08:15:00",
+  },
+  {
+    id: "3",
+    title: "Update documentation",
+    description: "Document the latest implementation.",
+    category: "Work",
+    priority: "low",
+    status: "completed",
+    dueDate: "2026-11-01",
+    updatedAt: "2026-11-01T15:00:00",
+  },
+  {
+    id: "4",
+    title: "Plan weekly activities",
+    description: "Organise priorities for the week.",
+    category: "Personal",
+    priority: "medium",
+    status: "pending",
+    dueDate: "2026-11-05",
+    updatedAt: "2026-11-02T07:45:00",
+  },
+];
