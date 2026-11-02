@@ -30,8 +30,12 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Overview",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="grid-outline" color={color} size={size} />
+          tabBarIcon: ({ focused, size }) => (
+            <Ionicons
+              name="grid-outline"
+              color={focused ? Colors.primary : Colors.muted}
+              size={size}
+            />
           ),
         }}
       />
@@ -40,8 +44,12 @@ export default function TabLayout() {
         name="tasks"
         options={{
           title: "Tasks",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="checkbox-outline" color={color} size={size} />
+          tabBarIcon: ({ focused, size }) => (
+            <Ionicons
+              name="checkbox-outline"
+              color={focused ? Colors.primary : Colors.muted}
+              size={size}
+            />
           ),
         }}
       />
